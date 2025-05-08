@@ -36,6 +36,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -68,6 +69,19 @@ public class AuthserviceApplication {
     @Bean
     PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        config.addAllowedOrigin("http://localhost:8888"); // Your SPA's origin
+        config.addAllowedOrigin("http://localhost:9090"); // BFF's origin
+        config.setAllowCredentials(true);
+        source.registerCorsConfiguration("/**", config); // Apply to all paths on auth server
+        return source;
     }
 
     @Bean
@@ -207,4 +221,3 @@ public class AuthserviceApplication {
         };
     }
 }
-
