@@ -1,0 +1,7 @@
+http://localhost:9000/oauth2/authorize?response_type=code&client_id=client-id&scope=read_resource&redirect_uri=http://127.0.0.1:8080/login/oauth2/code/oidc-client
+//Get auth code to Exchange for token
+
+THIS
+______
+                                                                                                                                                              {UR TOKEN HERE}
+curl -X POST http://localhost:9000/oauth2/token -H "Content-Type: application/x-www-form-urlencoded" -u "client-id:secret" -d "grant_type=authorization_code" -d "code=..." -d "redirect_uri=http://127.0.0.1:8080/login/oauth2/code/oidc-client"
