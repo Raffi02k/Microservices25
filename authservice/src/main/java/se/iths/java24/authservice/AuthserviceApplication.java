@@ -121,7 +121,6 @@ public class AuthserviceApplication {
         return http.build();
     }
 
-
     // Get a token for the site method
     @Bean
     public RegisteredClientRepository registeredClientRepository(PasswordEncoder encoder) {
