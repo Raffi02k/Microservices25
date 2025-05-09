@@ -15,7 +15,15 @@ public class SecurityConfig {
                         .requestMatchers("spa.html", "/js/**","/error").permitAll()
                         .anyRequest().authenticated()
                 )
-                .oauth2Login(Customizer.withDefaults())
+                //.oauth2Login(Customizer.withDefaults())
+                .oauth2Login(oauth2 -> oauth2
+                                .defaultSuccessUrl("/spa.html",true)
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/spa.html")
+                        .invalidateHttpSession(true)
+                                .clearAuthentication(true)
+                )
                 .oauth2Client(Customizer.withDefaults());
 
         return http.build();
