@@ -1,0 +1,10 @@
+services:
+  gateway:
+    image: gateway:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8000"
+  resourceserver:
+    image: resourceserver:0.0.1-SNAPSHOT
+
+
+

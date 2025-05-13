@@ -1,4 +1,3 @@
-
 package se.iths.java24.resourceserver;
 
 import org.springframework.boot.SpringApplication;
@@ -35,10 +34,10 @@ public class ResourceserverApplication {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll()).csrf(csrf -> csrf.disable());
+        http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .csrf(csrf -> csrf.disable());
         return http.build();
     }
-
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
