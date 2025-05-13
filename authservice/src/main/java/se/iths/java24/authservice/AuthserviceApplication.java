@@ -8,7 +8,6 @@ import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,6 +29,7 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2RefreshTokenGenerator;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -47,11 +47,11 @@ import java.util.UUID;
 @SpringBootApplication
 public class AuthserviceApplication {
 
-
     //Todo: Add user registration instead of hard coded Inmemory user
-    // Todo: Add client registration instead of hardcoded client-id and secret
-    // Todo: Don't create new keypair each start, store in database and reuse
-    // Todo: How can we handle user consent and store that in our database for future use?
+    //Todo: Add client registration instead of hardcoded client-id and secret
+    //Todo: Don't create new keypair each start, store in database and reuse
+    //Todo: Add Bean for custom OAuth2AuthorizationConsentService to persist consents
+
     public static void main(String[] args) {
         SpringApplication.run(AuthserviceApplication.class, args);
     }
@@ -84,24 +84,27 @@ public class AuthserviceApplication {
         return source;
     }
 
+
     @Bean
     @Order(2)
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
         http.authorizeHttpRequests(authorize ->
                         authorize.anyRequest().authenticated())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .formLogin(Customizer.withDefaults());
         return http.build();
     }
 
     @Bean
     @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
                 OAuth2AuthorizationServerConfigurer.authorizationServer();
 
         http
                 // Apply security matcher to only handle authorization server endpoints
                 .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 // Apply the OAuth2 Authorization Server config
                 .with(authorizationServerConfigurer, authorizationServer -> authorizationServer
                         .tokenRevocationEndpoint(Customizer.withDefaults())
@@ -109,19 +112,17 @@ public class AuthserviceApplication {
                         .oidc(Customizer.withDefaults())
                 )
                 // Allow public access to all authorization server endpoints (including .well-known/*)
-                .authorizeHttpRequests((authorize) ->
-                        authorize
-                                .anyRequest().authenticated()
+                .authorizeHttpRequests(authorize -> authorize
+                        .anyRequest().authenticated()
                 )
                 // Redirect to /login for browser clients who are unauthenticated
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
                 );
-
         return http.build();
     }
 
-    // Get a token for the site method
+
     @Bean
     public RegisteredClientRepository registeredClientRepository(PasswordEncoder encoder) {
         RegisteredClient spaClient = RegisteredClient.withId(UUID.randomUUID().toString())
@@ -129,7 +130,7 @@ public class AuthserviceApplication {
                 // .clientSecret(encoder.encode("spa-secret")) // REMOVE for public client
                 .clientAuthenticationMethod(ClientAuthenticationMethod.NONE) // SET for public client
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                //.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN) // REMOVE for public client
                 .redirectUri("http://localhost:8888/callback.html") // Matches REDIRECT_URI in app.js
                 .scope(OidcScopes.OPENID)
                 .scope("read_resource")

@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      mvc:
+        x-forwarded-request-headers-filter:
+
+        routes:
+          - id: example-route
+            uri: https://127.0.0.1:8081/
+            predicates:
+              - Path=/api/**
+            filters:
+              - RewritePath=/api/?(?<segment>.*), /$\{segment}
+
