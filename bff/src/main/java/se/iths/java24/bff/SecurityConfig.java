@@ -12,7 +12,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("spa.html", "/js/**","/error").permitAll()
+                        .requestMatchers("/spa.html", "/js/**", "/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 //.oauth2Login(Customizer.withDefaults())
@@ -20,9 +20,9 @@ public class SecurityConfig {
                                 .defaultSuccessUrl("/spa.html",true)
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/spa.html")
+                        .logoutSuccessUrl("/spa.html")
                         .invalidateHttpSession(true)
-                                .clearAuthentication(true)
+                        .clearAuthentication(true)
                 )
                 .oauth2Client(Customizer.withDefaults());
 

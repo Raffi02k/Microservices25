@@ -10,6 +10,8 @@
         <option value="$PROJECT_DIR$/spa/pom.xml" />
         <option value="$PROJECT_DIR$/gateway/pom.xml" />
         <option value="$PROJECT_DIR$/resourcserver/pom.xml" />
+        <option value="$PROJECT_DIR$/jokeService/pom.xml" />
+        <option value="$PROJECT_DIR$/quoteservice/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

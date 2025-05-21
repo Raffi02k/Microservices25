@@ -1,4 +1,4 @@
-package se.iths.java24.resourcserver;
+package se.iths.java24.resourceserver;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
