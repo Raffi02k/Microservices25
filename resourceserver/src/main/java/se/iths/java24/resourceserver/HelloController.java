@@ -1,4 +1,4 @@
-package se.iths.java24.resourceserver;
+package se.iths.java24.resourcserver;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -26,6 +26,7 @@ public class HelloController {
         List<String> headerNames = Collections.list(request.getHeaderNames());
 
         logger.info("Client IP: {} - Port: {}", clientIp, clientPort);
+        logger.info("Headers: {}", headerNames);
         logger.info("Forwarded-For: {}", request.getRemoteHost());
         logger.info("Forwarded-Port: {}", request.getRemotePort());
 
