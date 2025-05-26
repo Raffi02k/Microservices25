@@ -126,15 +126,12 @@ public class AuthserviceApplication {
     public RegisteredClientRepository registeredClientRepository(PasswordEncoder encoder) {
         RegisteredClient spaClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("spa-client-id") // Matches CLIENT_ID in app.js
-                // .clientSecret(encoder.encode("spa-secret")) // REMOVE for public client
                 .clientAuthenticationMethod(ClientAuthenticationMethod.NONE) // SET for public client
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                //.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN) // REMOVE for public client
                 .redirectUri("http://localhost:8888/callback.html") // Matches REDIRECT_URI in app.js
                 .scope(OidcScopes.OPENID)
                 .scope("read_resource")
                 .clientSettings(ClientSettings.builder()
-                        .requireProofKey(true) // PKCE is required and enforced
                         .requireAuthorizationConsent(false)
                         .build())
                 .build();
@@ -148,7 +145,7 @@ public class AuthserviceApplication {
                 .redirectUri("http://localhost:9090/login/oauth2/code/my-auth-server") // BFF's callback URL
                 .scope(OidcScopes.OPENID) // For user info
                 .scope("read_resource")   // To access the resource server
-                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).build()) // PKCE not strictly needed for confidential client but can be added
+                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).build())
                 .build();
 
         RegisteredClient client = RegisteredClient.withId(UUID.randomUUID().toString())
@@ -159,12 +156,14 @@ public class AuthserviceApplication {
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .redirectUri("http://127.0.0.1:8080/login/oauth2/code/oidc-client")
-                .scope(OidcScopes.OPENID) // For user info
+                .scope(OidcScopes.OPENID)
                 .scope("read_resource")
+                .scope("jokes.read")  // Scope for Joke Service
+                .scope("quotes.read") // Scope for Quote Service
                 .clientSettings(ClientSettings.builder()
-                        //.requireAuthorizationConsent(true)
                         .build())
                 .build();
+
 
         return new InMemoryRegisteredClientRepository(client, bffClient, spaClient);
     }
@@ -203,7 +202,7 @@ public class AuthserviceApplication {
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder()
-                .issuer("http://localhost:9000")
+                .issuer("http://auth:9000")
                 .build();
     }
 

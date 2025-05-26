@@ -4,4 +4,4 @@ http://localhost:9000/oauth2/authorize?response_type=code&client_id=client-id&sc
 THIS
 ______
                                                                                                                                                               {UR TOKEN HERE}
-curl -X POST http://localhost:9000/oauth2/token -H "Content-Type: application/x-www-form-urlencoded" -u "client-id:secret" -d "grant_type=authorization_code" -d "code=..." -d "redirect_uri=http://127.0.0.1:8080/login/oauth2/code/oidc-client"
+curl -X POST http://localhost:9000/oauth2/token -H "Content-Type: application/x-www-form-urlencoded" -u "client-id:secret" -d "grant_type=authorization_code" -d "code=9wyLrXp6NvhukjHz1w2QrOxx6WHudxmoTHdvQH-NcXSb1STx8jd00Qo-eTXClNrgB0IYii41kyS6eDgKiBEdtf79ayoQNKrw2C-8IX2bwICiYCxFpjEd1PvfwTemr0dT&state=abc" -d "redirect_uri=http://127.0.0.1:8080/login/oauth2/code/oidc-client"

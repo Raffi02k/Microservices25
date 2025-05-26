@@ -1,5 +1,6 @@
 package se.iths.java24.jokeservice;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,11 +18,9 @@ public class JokeController {
 
     private final Random random = new Random();
 
-    @GetMapping("/jokes/random") // ENDPOINT SPECIFY FOR LAB
+    @GetMapping("/jokes/random")
+    @PreAuthorize("hasAuthority('SCOPE_jokes.read')")
     public String getRandomJoke() {
-        // Här kan du senare lägga till logik om du vill använda information från JWT:n,
-        // t.ex. @AuthenticationPrincipal Jwt jwt i metodsignaturen.
         return jokes.get(random.nextInt(jokes.size()));
     }
 }
-

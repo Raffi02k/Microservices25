@@ -1,20 +1,52 @@
 services:
   gateway:
-    image: gateway:0.0.1-SNAPSHOT
+    build: ./gateway # Instruct Docker Compose to build from the 'gateway' directory
+    image: gateway:0.0.1-SNAPSHOT # Optional, but good for tagging the locally built image
     ports:
       - "8080:8000"
-  resourceserver:
-    image: resourceserver:0.0.1-SNAPSHOT
+    environment:
+      - AUTH_SERVER_URL=http://auth:9000
+      - JOKE_SERVICE_URL=http://jokeservice:8082
+      - QUOTE_SERVICE_URL=http://quoteservice:8083
+    depends_on:
+      - auth
+      - jokeservice
+      - quoteservice
+
+  jokeservice:
+    build: ./jokeservice # Instruct Docker Compose to build from the 'jokeservice' directory
+    image: jokeservice:0.0.1-SNAPSHOT # Optional tagging
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker # This is CRUCIAL to load application-docker.properties
+    ports:
+      - "8082:8082" # Map host port 8082 to container port 8082
+    depends_on:
+      - consul
+
+  quoteservice:
+    build: ./quoteservice # Instruct Docker Compose to build from the 'quoteservice' directory
+    image: quoteservice:0.0.1-SNAPSHOT # Optional tagging
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-    deploy:
-      replicas: 2
+      # - JWT_PUBLIC_KEY_URL=http://auth:9000/oauth2/jwks # Example for JWT validation config
+    ports:
+      - "8083"
+
   auth:
-    image: authservice:0.0.1-SNAPSHOT
+    build: ./authservice # Instruct Docker Compose to build from the 'authservice' directory
+    image: authservice:0.0.1-SNAPSHOT # Optional tagging
     ports:
       - "9000:9000"
+    environment:
+      - JWT_SECRET=your_super_secret_key
+
   consul:
+    # Consul is a pre-built public image, so 'image:' is correct here.
     image: hashicorp/consul
     ports:
       - "8500:8500"
     command: ["consul", "agent", "-server", "bootstrap", "-ui", "-client=0.0.0.0"]
+
+networks:
+  default:
+    driver: bridge

@@ -5,9 +5,35 @@ spring:
     gateway:
       mvc:
         routes:
+          # Existing route for general API
           - id: example-route
-            uri: http://resourceserver:8081/
+            uri: http://resourceserver:8081/ # If you have a general resourceserver
             predicates:
               - Path=/api/**
             filters:
               - RewritePath=/api/?(?<segment>.*), /$\{segment}
+
+          # New route for Joke Service
+          - id: jokes-route
+            uri: http://jokeservice:8082/ # Use service name and internal port
+            predicates:
+              - Path=/jokes/** # Predicate to match /jokes/random etc.
+            filters:
+              - RewritePath=/jokes(?<segment>.*), /jokes$\{segment} # Keep the /jokes prefix
+
+          # New route for Quote Service
+          - id: quotes-route
+            uri: http://quoteservice:8083/ # Use service name and internal port
+            predicates:
+              - Path=/quotes/** # Predicate to match /quotes/random etc.
+            filters:
+              - RewritePath=/quotes(?<segment>.*), /quotes$\{segment} # Keep the /quotes prefix
+
+          # Route for Auth Server login (if you want to expose it via the gateway)
+          - id: auth-login-route
+            uri: http://auth:9000/
+            predicates:
+              - Path=/auth/login # Expose /auth/login publicly via the gateway
+            filters:
+              - RewritePath=/auth/login, /oauth2/token # Example: if Auth Server's endpoint is /oauth2/token
+              # Adjust this based on your Auth Server's actual login endpoint

@@ -1,5 +1,6 @@
 package se.iths.java24.quoteservice;
 
+import org.springframework.security.access.prepost.PreAuthorize; // ADD THIS IMPORT
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,6 +21,7 @@ public class QuoteController {
     private final Random random = new Random();
 
     @GetMapping("/quotes/random")
+    @PreAuthorize("hasAuthority('SCOPE_quotes.read')")
     public String getRandomQuote() {
         return quotes.get(random.nextInt(quotes.size()));
     }
